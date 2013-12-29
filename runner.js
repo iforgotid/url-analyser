@@ -7,6 +7,8 @@
 //var http = require('http');
 var nodegrass = require('nodegrass');
 var fs = require("fs");
+//global pool
+var urlInfoPool = [];
 function handleUrl(url) {
   getHtml(url,function(err,data){
 
@@ -32,6 +34,8 @@ function getHtml(url,callback) {
                     .replace(/\{description\}/,params.description)
                     .replace(/\{title\}/,params.title);
       info += '\n';
+      pushPool(info);
+      /*
       fs.appendFile('./data/url-result.txt',info,function(err) {
         if(err) {
           console.log(err);
@@ -39,6 +43,7 @@ function getHtml(url,callback) {
           console.log("The file was saved!");
         }
       });
+      */
       //console.log(url + '|-|' + params.keywords + '|-|' + params.description);
     });
     //console.log(charset + ':->>' + url);
@@ -113,6 +118,22 @@ function getKeywordsAndDescription (str,charset,url,callback) {
   );
 };
 
+function pushPool(str) {
+  urlInfoPool.push(str);
+  var len = urlInfoPool.length;
+  console.log(len);
+  if(len == 50) {
+    var writeContent = urlInfoPool.join('');
+    urlInfoPool = [];
+    fs.appendFile('./data/url-result.txt',writeContent,function(err) {
+      if(err) {
+        console.log(err);
+      } else {
+        console.log("The url info pool was saved!");
+      }
+    });
+  }
+}
 
 module.exports = function(url) {
   return handleUrl(url);

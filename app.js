@@ -9,9 +9,10 @@ var fs=require('fs');
 process.on('uncaughtException', function (err) {
   console.error(err);
 });
+
 //var ret = analyser('http://tv.sohu.com/hdtv/');
 //var ret = analyser('http://www.intel.com/go/getwimax');
-
+var count = -1;
 fs.readFile('./data/url.txt','utf8',function(err,data){
   if(err){
     return console.log(err);
@@ -19,14 +20,23 @@ fs.readFile('./data/url.txt','utf8',function(err,data){
   var urls = data.split('\n');
   //console.log(urls.length);
   //console.log(urls[0]);
-  var count = 0;
-  setInterval(function(){
-    var urlInfo = urls[count].split(',');
-    if(!!urlInfo && !!urlInfo[1]) {
-      var url = urlInfo[1];
-      url = url.replace(/\r/,'');
-      analyser(url);
+  fs.readFile('./data/count','utf8',function(err,data){
+    if(data) {
+      count = Number(data);
     }
-    count++;
-  },1000);
+    setInterval(function(){
+      count++;
+      var urlInfo = urls[count].split(',');
+      if(!!urlInfo && !!urlInfo[1]) {
+        var url = urlInfo[1];
+        url = url.replace(/\r/,'');
+        analyser(url);
+      }
+      if(count % 50 == 0) {
+        fs.writeFile('./data/count',count,function(err){
+
+        });
+      }
+    },200);
+  });
 });
