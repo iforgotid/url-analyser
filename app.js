@@ -1,0 +1,32 @@
+/**
+ * Created with JetBrains PhpStorm.
+ * User: philipp <philipp.xue@gmail.com>
+ * Date: 12/29/13
+ * Time: 10:20 AM
+ */
+var analyser = require('./runner');
+var fs=require('fs');
+process.on('uncaughtException', function (err) {
+  console.error(err);
+});
+//var ret = analyser('http://tv.sohu.com/hdtv/');
+//var ret = analyser('http://www.intel.com/go/getwimax');
+
+fs.readFile('./data/url.txt','utf8',function(err,data){
+  if(err){
+    return console.log(err);
+  };
+  var urls = data.split('\n');
+  //console.log(urls.length);
+  //console.log(urls[0]);
+  var count = 0;
+  setInterval(function(){
+    var urlInfo = urls[count].split(',');
+    if(!!urlInfo && !!urlInfo[1]) {
+      var url = urlInfo[1];
+      url = url.replace(/\r/,'');
+      analyser(url);
+    }
+    count++;
+  },1000);
+});
