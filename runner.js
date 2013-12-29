@@ -26,10 +26,11 @@ function getHtml(url,callback) {
       execCharset = 'gb2312';
     }
     getKeywordsAndDescription(data,execCharset,url,function(params){
-      var tpl = '{url}-||-{keywords}-||-{description}';
+      var tpl = '{url}-||-{title}-||-{keywords}-||-{description}';
       var info = tpl.replace(/\{url\}/,url)
                     .replace(/\{keywords\}/,params.keywords)
-                    .replace(/\{description\}/,params.description);
+                    .replace(/\{description\}/,params.description)
+                    .replace(/\{title\}/,params.title);
       info += '\n';
       fs.appendFile('./data/url-result.txt',info,function(err) {
         if(err) {
@@ -102,6 +103,9 @@ function getKeywordsAndDescription (str,charset,url,callback) {
               retObj.description = meta.content || meta.CONTENT;
             }
           });
+          var title = $('title').text();
+          console.log(title);
+          retObj.title = title;
           callback(retObj);
           window.close();
         }
